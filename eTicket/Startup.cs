@@ -1,6 +1,9 @@
+using eTicket.Data;
+using eTicket.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +26,10 @@ namespace eTicket
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			//dbcontext config
+			services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
+			//services configuration
+			services.AddScoped<IActorsService, ActorsService>();
 			services.AddControllersWithViews();
 		}
 
@@ -52,6 +59,8 @@ namespace eTicket
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 			});
+			//seed database
+			AppDbInitializer.Seed(app);
 		}
 	}
 }
